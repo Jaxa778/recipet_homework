@@ -15,14 +15,15 @@ class _RecipeScreenState extends State<RecipeScreen> {
   final recipeController = RecipeController();
   final searchController = TextEditingController();
   List<RecipeModel> recipeDate = [];
+  List<RecipeModel> filteredRecipes = [];
   bool isLoading = false;
 
   Future<void> getRecipeDate() async {
     isLoading = true;
     final result = await recipeController.getRecipe();
     recipeDate = result;
-    isLoading = false;
-    setState(() {});
+    filteredRecipes = result;
+    setState(() => isLoading = false);
   }
 
   @override
@@ -31,34 +32,60 @@ class _RecipeScreenState extends State<RecipeScreen> {
     getRecipeDate();
   }
 
+  void filterRecipes(String query) {
+    final results =
+        recipeDate.where((recipe) {
+          return recipe.name.toLowerCase().contains(query.toLowerCase());
+        }).toList();
+
+    setState(() {
+      filteredRecipes = results;
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    searchController.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text("Recipes"),
-        TextField(decoration: InputDecoration(border: OutlineInputBorder())),
+        TextField(
+          controller: searchController,
+          onChanged: (value) {
+            return filterRecipes(value);
+          },
+          decoration: InputDecoration(
+            prefixIcon: Icon(Icons.search),
+            hintText: "Search",
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+          ),
+        ),
         isLoading
             ? Center(child: CircularProgressIndicator())
             : Expanded(
               child: ListView.separated(
                 itemBuilder: (context, index) {
+                  final recipe = filteredRecipes[index];
                   return ForRecipeScreenWidget(
-                    level: recipeDate[index].difficulty,
-                    name: recipeDate[index].name,
-                    cal: recipeDate[index].caloriesPerServing.toString(),
-                    country: recipeDate[index].cuisine,
-                    ball: recipeDate[index].reviewCount.toString(),
-                    image: recipeDate[index].image,
-                    rating: recipeDate[index].rating.toStringAsFixed(1),
+                    level: recipe.difficulty,
+                    name: recipe.name,
+                    cal: recipe.caloriesPerServing.toString(),
+                    country: recipe.cuisine,
+                    ball: recipe.reviewCount.toString(),
+                    image: recipe.image,
+                    rating: recipe.rating.toStringAsFixed(1),
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) {
-                            return LastScreen(
-                              rm: recipeDate[index],
-                            );
+                            return LastScreen(recipeModel: recipe);
                           },
                         ),
                       );
@@ -68,7 +95,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
                 separatorBuilder: (context, index) {
                   return Divider();
                 },
-                itemCount: recipeDate.length,
+                itemCount: filteredRecipes.length,
               ),
             ),
       ],

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:recipet_homework/models/recipe_model.dart';
 
 class LastScreen extends StatelessWidget {
-  final RecipeModel rm;
-  const LastScreen({super.key, required this.rm});
+  final RecipeModel recipeModel;
+  const LastScreen({super.key, required this.recipeModel});
 
   @override
   Widget build(BuildContext context) {
@@ -17,15 +17,15 @@ class LastScreen extends StatelessWidget {
             SizedBox(
               height: 350,
               width: double.infinity,
-              child: Image.network(rm.image, fit: BoxFit.cover),
+              child: Image.network(recipeModel.image, fit: BoxFit.cover),
             ),
-            Text(rm.name),
+            Text(recipeModel.name),
             Row(
               children: [
-                Text(rm.mealType[0]),
-                Text(rm.difficulty),
-                Text(rm.cuisine),
-                Text("${rm.caloriesPerServing.toString()} Cal"),
+                Text(recipeModel.mealType[0]),
+                Text(recipeModel.difficulty),
+                Text(recipeModel.cuisine),
+                Text("${recipeModel.caloriesPerServing.toString()} Cal"),
               ],
             ),
             Row(
@@ -47,7 +47,7 @@ class LastScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
-            ...rm.ingredients.map(
+            ...recipeModel.ingredients.map(
               (ingredient) => Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
@@ -69,7 +69,7 @@ class LastScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
-            ...rm.instructions.asMap().entries.map((entry) {
+            ...recipeModel.instructions.asMap().entries.map((entry) {
               final index = entry.key;
               final instruction = entry.value;
               return Padding(
@@ -89,28 +89,34 @@ class LastScreen extends StatelessWidget {
             Divider(),
             ListTile(
               title: Text("Prep time"),
-              subtitle: Text("${rm.prepTimeMinutes} minutes"),
+              subtitle: Text("${recipeModel.prepTimeMinutes} minutes"),
             ),
             Divider(),
             ListTile(
               title: Text("Cook time"),
-              subtitle: Text("${rm.cookTimeMinutes} minutes"),
+              subtitle: Text("${recipeModel.cookTimeMinutes} minutes"),
             ),
             Divider(),
             ListTile(
               title: Text("Servings"),
-              subtitle: Text(rm.servings.toString()),
+              subtitle: Text(recipeModel.servings.toString()),
             ),
             Divider(),
-            ListTile(title: Text("Difficulty"), subtitle: Text(rm.difficulty)),
+            ListTile(
+              title: Text("Difficulty"),
+              subtitle: Text(recipeModel.difficulty),
+            ),
             Divider(),
-            ListTile(title: Text("Cuisine"), subtitle: Text(rm.cuisine)),
+            ListTile(
+              title: Text("Cuisine"),
+              subtitle: Text(recipeModel.cuisine),
+            ),
             Divider(),
             ListTile(
               title: Text("Tags"),
               subtitle: Column(
                 children: [
-                  ...rm.tags.asMap().entries.map((entry) {
+                  ...recipeModel.tags.asMap().entries.map((entry) {
                     final index = entry.key;
                     final tag = entry.value;
                     return Padding(
